@@ -1,0 +1,23 @@
+{
+    "name": "meocox/air",
+    "description": "Meocox 纯 PHP 底层支持公共基础包",
+    "type": "library",
+    "license": "MIT",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "imoncn",
+            "email": "160865627@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Meocox\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
