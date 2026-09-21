@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+use Meocox\Config;
+
+/**
+ * Meocox 现代化核心配置文件范例
+ * 严格遵循 Next.js 16 优秀配置理念，并针对 PHP 8.2+ 进行现代化优化。
+ */
+return Config::define([
+    // 基础路径（支持子目录或 WordPress 插件/主题环境）
+    'basePath' => '',
+
+    // 路由高级控制（反向代理代理层 / BFF 转发）
+    'routing' => [
+        // 路径重写 (内部转发，URL 不变)
+        'rewrites' => [
+            '/api/v1/*' => '/api/v2/*',
+        ],
+
+        // 外部重定向 (浏览器端 301 / 302 跳转)
+        'redirects' => [
+            '/old-login' => [
+                'destination' => '/auth/login',
+                'permanent' => true,
+            ],
+        ],
+
+        // 全局安全响应头注入
+        'headers' => [
+            '/*' => [
+                'X-Content-Type-Options' => 'nosniff',
+                'X-Frame-Options' => 'DENY',
+                'X-XSS-Protection' => '1; mode=block',
+            ],
+            '/api/*' => [
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+            ],
+        ],
+
+        // 母版优先级 1：针对特定路由模式覆写或禁用母版
+        'layouts' => [
+            '/screen/*' => false,     // 大屏展示页禁用任何母版
+            '/embed/*' => false,      // 第三方嵌入页禁用母版
+        ],
+    ],
+
+    // 数据库连接池与慢查询监听
+    'database' => [
+        'default' => 'mysql',
+        'slowQueryThreshold' => 300, // 超过 300ms 自动触发慢查询预警日志
+        'connections' => [
+            'mysql' => [
+                'driver' => 'mysql',
+                'host' => $_ENV['DB_HOST'] ?? '127.0.0.1',
+                'port' => (int) ($_ENV['DB_PORT'] ?? 3306),
+                'database' => $_ENV['DB_DATABASE'] ?? 'meocox',
+                'username' => $_ENV['DB_USERNAME'] ?? 'root',
+                'password' => $_ENV['DB_PASSWORD'] ?? '',
+                'charset' => 'utf8mb4',
+            ],
+            'sqlite' => [
+                'driver' => 'sqlite',
+                'database' => __DIR__ . '/runtime/database.sqlite',
+            ],
+        ],
+    ],
+
+    // 路径映射
+    'paths' => [
+        'runtime' => __DIR__ . '/runtime',
+        'routes' => __DIR__ . '/app/routes',
+    ],
+
+    // 调试模式（开发环境开启 hot-reload Schema JIT 与详细调用栈）
+    'debug' => (bool) ($_ENV['APP_DEBUG'] ?? false),
+]);
